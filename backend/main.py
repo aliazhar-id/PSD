@@ -5,7 +5,7 @@ import pytz
 app = Flask(__name__)
 
 # Load CSV into a pandas DataFrame
-data = pd.read_csv("dataset_bbca_5y.csv", parse_dates=["Date"])
+data = pd.read_csv("../dataset/dataset_bbca_5y.csv", parse_dates=["Date"])
 
 # @app.route('/api/data', methods=['GET']
 @app.route('/api/data', methods=['GET'])
