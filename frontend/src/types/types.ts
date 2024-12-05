@@ -1,4 +1,4 @@
 export interface StockPrice {
-	Date: string
-	Close: number
+	date: string
+	close: number
 }
