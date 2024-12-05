@@ -1,10 +1,26 @@
 import { StockPrice } from '@/types/types'
+import {
+	formatDate,
+	getCurrentMonthRange,
+	getCurrentWeekRange,
+} from '@/lib/utils'
 
-export async function getStocksPrice(): Promise<StockPrice[]> {
+export async function fetchStockData(activeTab: string): Promise<StockPrice[]> {
 	try {
-		const response = await fetch(
-			`${process.env.NEXT_PUBLIC_BASE_URL}/api/admin`
-		)
+		const { from, to } = getCurrentWeekRange()
+		let url = `http://127.0.0.1:5000/api/data?from=${from}&to=${to}`
+
+		console.log(from, to)
+
+		if (activeTab === 'history') {
+			url = 'http://127.0.0.1:5000/api/stocks'
+		} else if (activeTab === 'monthly') {
+			const { from, to } = getCurrentMonthRange()
+			console.log(from, to)
+			url = `http://127.0.0.1:5000/api/data?from=${from}&to=${to}`
+		}
+
+		const response = await fetch(url, { method: 'GET' })
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch stocks data: ${response.status}`)
@@ -15,14 +31,13 @@ export async function getStocksPrice(): Promise<StockPrice[]> {
 			result.data = []
 		}
 
-		const data = result.map((item: StockPrice) => ({
-			date: new Date(item.Date),
-			Close: item.Close,
+		return result.data.map((item: StockPrice) => ({
+			date: formatDate(item.date),
+			close: item.close,
 		}))
-
-		return data
 	} catch (error) {
-		console.log('error', error)
-		throw new Error('Failed to fetch stocks data')
+		throw new Error(
+			error instanceof Error ? error.message : 'An unknown error occurred'
+		)
 	}
 }
