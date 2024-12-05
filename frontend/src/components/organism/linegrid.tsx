@@ -18,7 +18,7 @@ export default function LineGrid({
 	data: StockPrice[]
 }) {
 	const minPrice = useMemo(() => {
-		return Math.min(...data.map((item) => item.Close)) || 0
+		return Math.min(...data.map((item) => item.close)) || 0
 	}, [data])
 
 	function renderTooltipContent({
@@ -52,7 +52,7 @@ export default function LineGrid({
 				<Tooltip content={renderTooltipContent} />
 				<Line
 					type="linear"
-					dataKey="Close"
+					dataKey="close"
 					stroke="#4338ca"
 					strokeWidth={2}
 					dot={false}
