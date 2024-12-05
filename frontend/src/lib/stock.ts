@@ -1,23 +1,14 @@
 import { StockPrice } from '@/types/types'
-import {
-	formatDate,
-	getCurrentMonthRange,
-	getCurrentWeekRange,
-} from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 
 export async function fetchStockData(activeTab: string): Promise<StockPrice[]> {
 	try {
-		const { from, to } = getCurrentWeekRange()
-		let url = `http://127.0.0.1:5000/api/data?from=${from}&to=${to}`
-
-		console.log(from, to)
+		let url = `http://127.0.0.1:5000/api/predict_weekly`
 
 		if (activeTab === 'history') {
 			url = 'http://127.0.0.1:5000/api/stocks'
 		} else if (activeTab === 'monthly') {
-			const { from, to } = getCurrentMonthRange()
-			console.log(from, to)
-			url = `http://127.0.0.1:5000/api/data?from=${from}&to=${to}`
+			url = `http://127.0.0.1:5000/api/predict_monthly`
 		}
 
 		const response = await fetch(url, { method: 'GET' })
