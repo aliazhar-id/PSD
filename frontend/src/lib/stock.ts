@@ -3,12 +3,12 @@ import { formatDate } from '@/lib/utils'
 
 export async function fetchStockData(activeTab: string): Promise<StockPrice[]> {
 	try {
-		let url = `http://127.0.0.1:5000/api/predict_weekly`
+		let url = `http://127.0.0.1:5000/api/weekly_prediction`
 
 		if (activeTab === 'history') {
 			url = 'http://127.0.0.1:5000/api/stocks'
 		} else if (activeTab === 'monthly') {
-			url = `http://127.0.0.1:5000/api/predict_monthly`
+			url = `http://127.0.0.1:5000/api/monthly_prediction`
 		}
 
 		const response = await fetch(url, { method: 'GET' })
