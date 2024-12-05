@@ -101,7 +101,7 @@ export default function App() {
 					<div className="flex justify-between items-center mb-6">
 						<div>
 							<p className="text-sm text-muted-foreground mb-1">
-								Current Price
+								Harga sekarang
 							</p>
 							<div className="flex items-baseline gap-2">
 								<p className="text-3xl font-bold">
