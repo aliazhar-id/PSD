@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from stocks import load_or_fetch_stock_data
-from model import preprocess_daily_data, train_daily_model, predict_next_5_business_days, predict_next_4_weeks
+from model import preprocess_daily_data, prediction
 
 app = Flask(__name__)
 CORS(app)
@@ -37,29 +37,47 @@ def get_last_price():
         }
     })
 
-@app.route('/api/predict_weekly', methods=['GET'])
-def predict_weekly():
+# @app.route('/api/predict_weekly', methods=['GET'])
+# def predict_weekly():
+#     data = load_or_fetch_stock_data()
+#     daily_data = preprocess_daily_data(data)
+
+#     model = train_daily_model(daily_data)
+#     last_day_number = len(daily_data) - 1
+#     last_date = daily_data.index[-1]
+#     predicted_data = predict_next_5_business_days(model, last_day_number, last_date)
+
+#     return jsonify({"message": "Predict stock weekly", "data": predicted_data})
+
+# @app.route('/api/predict_monthly', methods=['GET'])
+# def predict_monthly():
+#     data = load_or_fetch_stock_data()
+#     daily_data = preprocess_daily_data(data)
+
+#     model = train_daily_model(daily_data)
+#     last_day_number = len(daily_data) - 1
+#     last_date = daily_data.index[-1]
+#     predicted_data = predict_next_4_weeks(model, last_day_number, last_date)
+
+#     return jsonify({"message": "Predict stock monthly", "data": predicted_data})
+
+@app.route('/api/monthly_prediction', methods=['GET'])
+def monthly():
     data = load_or_fetch_stock_data()
     daily_data = preprocess_daily_data(data)
-
-    model = train_daily_model(daily_data)
-    last_day_number = len(daily_data) - 1
     last_date = daily_data.index[-1]
-    predicted_data = predict_next_5_business_days(model, last_day_number, last_date)
+    result = prediction(data, last_date, 20)
 
-    return jsonify({"message": "Predict stock weekly", "data": predicted_data})
+    return jsonify({"message": "Predict stock monthly", "data": result})
 
-@app.route('/api/predict_monthly', methods=['GET'])
-def predict_monthly():
+@app.route('/api/weekly_prediction', methods=['GET'])
+def weekly():
     data = load_or_fetch_stock_data()
     daily_data = preprocess_daily_data(data)
-
-    model = train_daily_model(daily_data)
-    last_day_number = len(daily_data) - 1
     last_date = daily_data.index[-1]
-    predicted_data = predict_next_4_weeks(model, last_day_number, last_date)
+    result = prediction(data, last_date, 5)
 
-    return jsonify({"message": "Predict stock monthly", "data": predicted_data})
+    return jsonify({"message": "Predict stock weekly", "data": result})
 
 if __name__ == '__main__':
     app.run(debug=True)
