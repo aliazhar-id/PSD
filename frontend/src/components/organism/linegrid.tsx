@@ -11,12 +11,17 @@ import {
 	Tooltip,
 	ResponsiveContainer,
 } from 'recharts'
+import CustomizedAxisTick from './customTick'
 
 export default function LineGrid({
 	data,
+	activeTab,
 }: {
 	data: StockPrice[]
+	activeTab: string
 }) {
+	const margin = activeTab === 'history' ? { bottom: 50 } : { bottom: 0 }
+
 	const minPrice = useMemo(() => {
 		return Math.min(...data.map((item) => item.close)) || 0
 	}, [data])
@@ -40,14 +45,34 @@ export default function LineGrid({
 
 	return (
 		<ResponsiveContainer width="100%" height={300}>
-			<LineChart data={data}>
+			<LineChart data={data} height={500} margin={margin}>
 				<CartesianGrid strokeDasharray="3 3" vertical={false} />
-				<XAxis
-					dataKey="date"
-					axisLine={false}
-					tickLine={false}
-					padding={{ left: 30, right: 30 }}
-				/>
+				{activeTab === 'history' ? (
+					<XAxis
+						dataKey="date"
+						axisLine={false}
+						tickLine={false}
+						padding={{ left: 30, right: 30 }}
+						tick={
+							<CustomizedAxisTick
+								x={0}
+								y={0}
+								payload={{
+									value: '',
+								}}
+							/>
+						}
+					/>
+				) : (
+					<XAxis
+						dataKey="date"
+						axisLine={false}
+						tickLine={false}
+						padding={{ left: 30, right: 30 }}
+						tickMargin={10}
+					/>
+				)}
+
 				<YAxis axisLine={false} tickLine={false} domain={[minPrice, 'auto']} />
 				<Tooltip content={renderTooltipContent} />
 				<Line
