@@ -1,43 +1,61 @@
 from flask import Flask, request, jsonify
-import pandas as pd
-import pytz
+from flask_cors import CORS
+from stocks import load_or_fetch_stock_data
+from lr_model import preprocess, predictions
 
 app = Flask(__name__)
+CORS(app)
 
-# Load CSV into a pandas DataFrame
-data = pd.read_csv("../dataset/dataset_bbca_5y.csv", parse_dates=["Date"])
+@app.route('/api/stocks', methods=['GET'])
+def get_stocks():
+    data = load_or_fetch_stock_data()
+    result = data.reset_index().to_dict(orient="records")
 
-# @app.route('/api/data', methods=['GET']
-@app.route('/api/data', methods=['GET'])
-def get_data():
-    # Get query parameters
-    date_from = request.args.get('from')
-    date_to = request.args.get('to')
+    return jsonify({"message": "Stock data fetched and saved successfully.", "data": result})
 
-    # Validate dates
-    if not date_from or not date_to:
-        return jsonify({"error": "Please provide 'from' and 'to' date parameters"}), 400
+@app.route('/api/last_price', methods=['GET'])
+def get_last_price():
+    data = load_or_fetch_stock_data()
 
-    try:
-        tz = pytz.UTC
-        date_from = pd.to_datetime(date_from).tz_localize(tz)
-        date_to = pd.to_datetime(date_to).tz_localize(tz)
-    except ValueError:
-        return jsonify({"error": "Invalid date format. Use YYYY-MM-DD."}), 400
+    last_row = data.iloc[-2]
+    prev_row = data.iloc[-3]
 
-    # Filter data based on the date range
-    filtered_data = data[(data['Date'] >= date_from) & (data['Date'] <= date_to)]
+    last_price = last_row['close']
+    prev_price = prev_row['close']
 
-    if date_from > date_to:
-        return jsonify({"error": "'from' date must be earlier than or equal to 'to' date"}), 400
+    price_change = last_price - prev_price
+    percentage_change = (price_change / prev_price) * 100
+    percentage_change = round(percentage_change, 2)
+    is_price_up = price_change > 0
 
-    # Check if data exists
-    if filtered_data.empty:
-        return jsonify({"message": "No data found for the given date range"}), 404
+    return jsonify({
+        "message": "Last close fetched successfully",
+        "data": {
+            "last_price": last_price,
+            "prev_price": prev_price,
+            "price_change": price_change,
+            "percentage_change": percentage_change,
+            "isPriceUp": bool(is_price_up)
+        }
+    })
 
-    # Convert the filtered data to a list of dictionaries
-    result = filtered_data.to_dict(orient="records")
-    return jsonify(result)
+@app.route('/api/monthly_prediction', methods=['GET'])
+def monthly():
+    data = load_or_fetch_stock_data()
+    daily_data = preprocess(data)
+    last_date = daily_data.index[-1]
+    result = predictions(data, last_date, 20)
+
+    return jsonify({"message": "Predict stock monthly", "data": result})
+
+@app.route('/api/weekly_prediction', methods=['GET'])
+def weekly():
+    data = load_or_fetch_stock_data()
+    daily_data = preprocess(data)
+    last_date = daily_data.index[-1]
+    result = predictions(data, last_date, 5)
+
+    return jsonify({"message": "Predict stock weekly", "data": result})
 
 if __name__ == '__main__':
     app.run(debug=True)
