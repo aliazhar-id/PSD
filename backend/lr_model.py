@@ -1,5 +1,4 @@
 from sklearn.linear_model import LinearRegression
-import numpy as np
 import pandas as pd
 from datetime import timedelta
 
@@ -13,7 +12,7 @@ def get_next_business_day(current_date):
     else:
         return current_date + timedelta(days=1)
 
-def preprocess_daily_data(data):
+def preprocess(data):
     data['date'] = pd.to_datetime(data['date'])
     data.set_index('date', inplace=True)
 
@@ -24,55 +23,7 @@ def preprocess_daily_data(data):
 
     return daily_data
 
-# def train_daily_model(daily_data):
-#     if len(daily_data) < 2:
-#         raise ValueError("Not enough data to train the model. Please check the dataset.")
-
-#     daily_data = daily_data.reset_index()
-#     daily_data['day_number'] = np.arange(len(daily_data))
-
-#     X = daily_data[['day_number']].values
-#     y = daily_data['close'].values
-
-#     model = LinearRegression()
-#     model.fit(X, y)
-#     return model
-
-# def predict_next_5_business_days(model, last_day_number, last_date):
-#     predicted_data = []
-#     current_date = get_next_business_day(last_date)
-
-#     for i in range(5):
-#         next_day_number = last_day_number + (i + 1)
-#         predicted_price = model.predict(np.array([[next_day_number]]))
-
-#         predicted_data.append({
-#             "close": predicted_price[0],
-#             "date": current_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
-#         })
-
-#         current_date = get_next_business_day(current_date)
-
-#     return predicted_data
-
-# def predict_next_4_weeks(model, last_day_number, last_date):
-#     predicted_data = []
-#     current_date = get_next_business_day(last_date)
-
-#     for i in range(20):
-#         next_day_number = last_day_number + (i + 1)
-#         predicted_price = model.predict(np.array([[next_day_number]]))
-
-#         predicted_data.append({
-#             "close": predicted_price[0],
-#             "date": current_date.strftime("%a, %d %b %Y %H:%M:%S GMT")
-#         })
-
-#         current_date = get_next_business_day(current_date)
-
-#     return predicted_data
-
-def prediction(df, last_date, days):
+def predictions(df, last_date, days):
     current_date = get_next_business_day(last_date)
 
     df['Close_Lag1'] = df['close'].shift(1)
