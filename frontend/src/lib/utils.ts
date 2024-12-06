@@ -21,3 +21,13 @@ export function formatDate(dateInput: string): string {
 	const date = new Date(dateInput)
 	return date.toLocaleDateString('id-ID', options)
 }
+
+export function formatDateHistory(dateInput: string): string {
+	const options: Intl.DateTimeFormatOptions = {
+		year: 'numeric',
+		month: 'numeric',
+		day: 'numeric',
+	}
+	const date = new Date(dateInput)
+	return date.toLocaleDateString('id-ID', options)
+}
