@@ -1,5 +1,5 @@
 import { StockPrice } from '@/types/types'
-import { formatDate } from '@/lib/utils'
+import { formatDate, formatDateHistory } from '@/lib/utils'
 
 export async function fetchStockData(activeTab: string): Promise<StockPrice[]> {
 	try {
@@ -20,6 +20,13 @@ export async function fetchStockData(activeTab: string): Promise<StockPrice[]> {
 		const result = await response.json()
 		if (!Array.isArray(result.data)) {
 			result.data = []
+		}
+
+		if (activeTab === 'history') {
+			return result.data.map((item: StockPrice) => ({
+				date: formatDateHistory(item.date),
+				close: item.close,
+			}))
 		}
 
 		return result.data.map((item: StockPrice) => ({
