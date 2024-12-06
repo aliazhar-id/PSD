@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from stocks import load_or_fetch_stock_data
-from model import preprocess_daily_data, prediction
+from lr_model import preprocess, predictions
 
 app = Flask(__name__)
 CORS(app)
@@ -17,8 +17,8 @@ def get_stocks():
 def get_last_price():
     data = load_or_fetch_stock_data()
 
-    last_row = data.iloc[-1]
-    prev_row = data.iloc[-2]
+    last_row = data.iloc[-2]
+    prev_row = data.iloc[-3]
 
     last_price = last_row['close']
     prev_price = prev_row['close']
@@ -26,6 +26,7 @@ def get_last_price():
     price_change = last_price - prev_price
     percentage_change = (price_change / prev_price) * 100
     percentage_change = round(percentage_change, 2)
+    is_price_up = price_change > 0
 
     return jsonify({
         "message": "Last close fetched successfully",
@@ -33,49 +34,26 @@ def get_last_price():
             "last_price": last_price,
             "prev_price": prev_price,
             "price_change": price_change,
-            "percentage_change": percentage_change
+            "percentage_change": percentage_change,
+            "isPriceUp": bool(is_price_up)
         }
     })
-
-# @app.route('/api/predict_weekly', methods=['GET'])
-# def predict_weekly():
-#     data = load_or_fetch_stock_data()
-#     daily_data = preprocess_daily_data(data)
-
-#     model = train_daily_model(daily_data)
-#     last_day_number = len(daily_data) - 1
-#     last_date = daily_data.index[-1]
-#     predicted_data = predict_next_5_business_days(model, last_day_number, last_date)
-
-#     return jsonify({"message": "Predict stock weekly", "data": predicted_data})
-
-# @app.route('/api/predict_monthly', methods=['GET'])
-# def predict_monthly():
-#     data = load_or_fetch_stock_data()
-#     daily_data = preprocess_daily_data(data)
-
-#     model = train_daily_model(daily_data)
-#     last_day_number = len(daily_data) - 1
-#     last_date = daily_data.index[-1]
-#     predicted_data = predict_next_4_weeks(model, last_day_number, last_date)
-
-#     return jsonify({"message": "Predict stock monthly", "data": predicted_data})
 
 @app.route('/api/monthly_prediction', methods=['GET'])
 def monthly():
     data = load_or_fetch_stock_data()
-    daily_data = preprocess_daily_data(data)
+    daily_data = preprocess(data)
     last_date = daily_data.index[-1]
-    result = prediction(data, last_date, 20)
+    result = predictions(data, last_date, 20)
 
     return jsonify({"message": "Predict stock monthly", "data": result})
 
 @app.route('/api/weekly_prediction', methods=['GET'])
 def weekly():
     data = load_or_fetch_stock_data()
-    daily_data = preprocess_daily_data(data)
+    daily_data = preprocess(data)
     last_date = daily_data.index[-1]
-    result = prediction(data, last_date, 5)
+    result = predictions(data, last_date, 5)
 
     return jsonify({"message": "Predict stock weekly", "data": result})
 
