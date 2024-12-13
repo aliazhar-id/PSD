@@ -12,7 +12,6 @@ export async function fetchStockData(activeTab: string): Promise<StockPrice[]> {
 		}
 
 		const response = await fetch(url, { method: 'GET' })
-
 		if (!response.ok) {
 			throw new Error(`Failed to fetch stocks data: ${response.status}`)
 		}
