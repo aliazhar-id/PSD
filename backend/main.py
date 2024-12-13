@@ -8,10 +8,11 @@ CORS(app)
 
 @app.route('/api/last_price', methods=['GET'])
 def last_price():
-    last_price_data = get_last_price()
+    result = get_last_price()
+    
     return jsonify({
         "message": "Last close fetched successfully",
-        "data": last_price_data
+        "data": result
     })
 
 @app.route('/api/weekly_prediction', methods=['GET'])
