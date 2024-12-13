@@ -1,5 +1,7 @@
 from sklearn.linear_model import LinearRegression
 import pandas as pd
+from datetime import datetime
+import pytz
 
 def predictions(df, days):
     # df.set_index('date', inplace=True)
@@ -26,9 +28,18 @@ def predictions(df, days):
 
     model = LinearRegression()
     model.fit(X, y)
+    
+    now = datetime.now(pytz.timezone('Asia/Jakarta'))
+    market_close_time = now.replace(hour=16, minute=0, second=0, microsecond=0)
+    market_open_time = now.replace(hour=9, minute=30, second=0, microsecond=0)
 
-    last_row = df.iloc[-1][features]
+    if market_open_time <= now < market_close_time:
+        last_row = df.iloc[-2][features]
+    else :
+        last_row = df.iloc[-1][features]
+    
     future_predictions = []
+    # last_row = df.iloc[-1][features]
 
     for day in range(days):
         prediction_input = pd.DataFrame([last_row], columns=features)
