@@ -7,7 +7,7 @@ import LineGrid from '@/components/organism/linegrid'
 import { ActiveTab } from '@/types/types'
 import PriceInfo from '@/components/organism/price'
 import image from '@/public/image.png'
-import Error from './components/organism/error'
+import Error from '@/components/organism/error'
 
 export default function App() {
 	const [activeTab, setActiveTab] = useState<ActiveTab>('weekly')
@@ -41,7 +41,7 @@ export default function App() {
 							<TabsTrigger value="history">Data Histori</TabsTrigger>
 						</TabsList>
 					</Tabs>
-					<LineGrid currentData={currentData} activeTab={activeTab} />
+					<LineGrid currentData={currentData} activeTab={activeTab} height={100} width={350} />
 				</CardContent>
 			</Card>
 		</div>
