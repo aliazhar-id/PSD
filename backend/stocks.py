@@ -44,15 +44,21 @@ def get_last_price():
     data = load_or_fetch_stock_data()
     
     now = datetime.now(JAKARTA_TZ)
-    market_close_time = now.replace(hour=16, minute=0, second=0, microsecond=0)
-    market_open_time = now.replace(hour=9, minute=30, second=0, microsecond=0)
+    current_day_of_week = now.weekday()
 
-    if market_open_time <= now < market_close_time:
-        last_row = data.iloc[-2]
-        prev_row = data.iloc[-3]
-    else:
-        last_row = data.iloc[-1]
+    if current_day_of_week == 5 or current_day_of_week == 6:  
+        last_row = data.iloc[-1]  
         prev_row = data.iloc[-2]
+    else:
+        market_close_time = now.replace(hour=16, minute=0, second=0, microsecond=0)
+        market_open_time = now.replace(hour=9, minute=30, second=0, microsecond=0)
+
+        if market_open_time <= now < market_close_time:
+            last_row = data.iloc[-2]
+            prev_row = data.iloc[-3]
+        else:
+            last_row = data.iloc[-1]
+            prev_row = data.iloc[-2]
 
     last_price = last_row['close']
     prev_price = prev_row['close']

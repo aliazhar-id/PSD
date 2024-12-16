@@ -30,13 +30,18 @@ def predictions(df, days):
     model.fit(X, y)
     
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
-    market_close_time = now.replace(hour=16, minute=0, second=0, microsecond=0)
-    market_open_time = now.replace(hour=9, minute=30, second=0, microsecond=0)
+    current_day_of_week = now.weekday()
 
-    if market_open_time <= now < market_close_time:
-        last_row = df.iloc[-2][features]
-    else :
+    if current_day_of_week == 5 or current_day_of_week == 6:  
         last_row = df.iloc[-1][features]
+    else:
+        market_close_time = now.replace(hour=16, minute=0, second=0, microsecond=0)
+        market_open_time = now.replace(hour=9, minute=30, second=0, microsecond=0)
+
+        if market_open_time <= now < market_close_time:
+            last_row = df.iloc[-2][features]
+        else :
+            last_row = df.iloc[-1][features]
     
     future_predictions = []
     # last_row = df.iloc[-1][features]
