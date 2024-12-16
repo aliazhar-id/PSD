@@ -22,7 +22,7 @@ This project is part of a Proyek Sains Data (Data Science Project), focusing on 
 - ReactJS - JavaScript library for building user interfaces
 - TailwindCSS - Utility-first CSS framework
 - ShadCN - A modern component library for building accessible UIs
-- Recharts - Charting library for React
+- Chart.js - Charting library for React
 
 ### Backend
 
@@ -39,9 +39,9 @@ This project is part of a Proyek Sains Data (Data Science Project), focusing on 
 
 To run this project locally, you need to have the following installed:
 
-- Node.js (for running the frontend)
-- Python 3.7+ (for running the backend)
-- Pip (for installing Python dependencies)
+- [Node.js](https://nodejs.org/id) (for running the frontend)
+- [Python 3.7+](https://www.python.org/) (for running the backend)
+- [Pip](https://pypi.org/project/pip/) (for installing Python dependencies)
 
 ### Installation
 
