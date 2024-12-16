@@ -14,7 +14,7 @@ export default function PriceInfo({ price }: { price: LastPrice }) {
 
 	return (
 		<div>
-			<p className="text-sm text-muted-foreground mb-1">Harga saat ini</p>
+			<p className="text-md mb-1">Harga saat ini</p>
 			<div className="flex items-baseline gap-2">
 				<p className="text-3xl font-bold">
 					{lastPrice && formatRupiah(lastPrice)}
