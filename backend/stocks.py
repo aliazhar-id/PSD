@@ -8,10 +8,9 @@ CSV_FILE_PATH = "../dataset/dataset_bbca_5y.csv"
 TICKER = "BBCA.JK"
 YEARS = 5
 JAKARTA_TZ = pytz.timezone('Asia/Jakarta')
-NOW = datetime.now(JAKARTA_TZ)
 
 def fetch_stock_data(TICKER, YEARS):
-    five_years_ago = (NOW - timedelta(days=YEARS * 365)).strftime("%Y-%m-%d")
+    five_years_ago = (datetime.now(JAKARTA_TZ) - timedelta(days=YEARS * 365)).strftime("%Y-%m-%d")
     data = yf.download(TICKER, start=five_years_ago, progress=False)
     data.columns = [ columns[0].lower() for columns in data.columns ]
     data.index.name = data.index.name.lower()
@@ -29,9 +28,10 @@ def load_or_fetch_stock_data():
             data.to_csv(CSV_FILE_PATH)
         else:
             if last_date.tzinfo is None:
-                last_date = JAKARTA_TZ.localize(last_date)
+                last_date = pytz.timezone('Asia/Jakarta').localize(last_date)
 
-            if last_date < NOW - timedelta(days=1):
+            now = datetime.now(JAKARTA_TZ)
+            if last_date < now - timedelta(days=1):
                 data = fetch_stock_data(TICKER, YEARS)
                 data.to_csv(CSV_FILE_PATH)
     else:
@@ -43,16 +43,17 @@ def load_or_fetch_stock_data():
 def get_last_price():
     data = load_or_fetch_stock_data()
     
-    current_day_of_week = NOW.weekday()
+    now = datetime.now(JAKARTA_TZ)
+    current_day_of_week = now.weekday()
 
     if current_day_of_week == 5 or current_day_of_week == 6:  
         last_row = data.iloc[-1]  
         prev_row = data.iloc[-2]
     else:
-        market_close_time = NOW.replace(hour=16, minute=0, second=0, microsecond=0)
-        market_open_time = NOW.replace(hour=9, minute=30, second=0, microsecond=0)
+        market_close_time = now.replace(hour=16, minute=0, second=0, microsecond=0)
+        market_open_time = now.replace(hour=9, minute=30, second=0, microsecond=0)
 
-        if market_open_time <= NOW < market_close_time:
+        if market_open_time <= now < market_close_time:
             last_row = data.iloc[-2]
             prev_row = data.iloc[-3]
         else:
